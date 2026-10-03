@@ -1,0 +1,41 @@
+{
+  "name": "siyuan-plugin-calendar-caldav",
+  "author": "simonshen97",
+  "url": "https://github.com/simonshen97/siyuan-plugin-calendar-caldav",
+  "version": "0.6.9",
+  "minAppVersion": "3.1.0",
+  "backends": [
+    "windows",
+    "linux",
+    "darwin",
+    "docker",
+    "android",
+    "ios"
+  ],
+  "frontends": [
+    "all"
+  ],
+  "displayName": {
+    "default": "Calendar (CalDAV)",
+    "zh_CN": "日历视图（CalDAV 同步）"
+  },
+  "description": {
+    "default": "Calendar view for SiYuan, with two-way CalDAV sync (Nextcloud, Radicale, Baikal, iCloud, Fastmail, Synology ...).",
+    "zh_CN": "思源笔记日历视图，支持与 CalDAV 服务（Nextcloud、Radicale、Baikal、iCloud、Fastmail、群晖等）双向同步。"
+  },
+  "readme": {
+    "default": "README.md",
+    "zh_CN": "README_zh_CN.md"
+  },
+  "funding": {
+    "custom": []
+  },
+  "keywords": [
+    "calendar",
+    "caldav",
+    "icalendar",
+    "日历",
+    "日程",
+    "同步"
+  ]
+}

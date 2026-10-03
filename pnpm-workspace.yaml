@@ -1,0 +1,5 @@
+# pnpm 11 起构建脚本白名单从 package.json 迁移到此文件。
+allowBuilds:
+  esbuild: true
+onlyBuiltDependencies:
+  - esbuild

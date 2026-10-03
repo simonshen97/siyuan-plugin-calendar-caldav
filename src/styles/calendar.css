@@ -1,0 +1,1024 @@
+/*
+ * 日历视图样式。所有颜色优先复用思源主题变量（--b3-theme-*），
+ * 未定义时回退到自身变量，因此在自定义主题、暗色主题下都能保持协调。
+ *
+ * 显示约定（重要）：**高亮 / 选中 / 今日 一律不用白色文字**。
+ * 白色文字在浅色主题、被其他样式覆盖文字色、或主题变量缺失时都会变成「看不见」；
+ * 这些状态统一使用 --cc-highlight（默认红色，日历内可被主题主色覆盖）+ 加粗。
+ */
+
+.cc-calendar {
+    --cc-accent: var(--b3-theme-primary, #3574f0);
+    --cc-accent-soft: var(--b3-theme-primary-lightest, rgba(53, 116, 240, 0.12));
+    /* 高亮文字色：默认取主题主色，取不到时用红色，保证始终是非白的高对比色 */
+    --cc-highlight: var(--b3-theme-primary, #d23f31);
+    --cc-text: var(--b3-theme-on-background, #1f2937);
+    --cc-text-dim: var(--b3-theme-on-surface, #6b7280);
+    --cc-bg: var(--b3-theme-background, #ffffff);
+    --cc-bg-soft: var(--b3-theme-surface, #f5f7fa);
+    --cc-border: var(--b3-border-color, #e2e8f0);
+    --cc-grid: var(--b3-list-hover, #eef2f7);
+    --cc-today: var(--cc-highlight);
+    --cc-danger: var(--b3-theme-error, #d23f31);
+    --cc-radius: 8px;
+    --cc-hour-height: 48px;
+    --cc-chip-color: var(--cc-accent);
+    /* 兜底变量：插件挂载在思源外的容器里时，部分 --b3-* 变量可能缺失 */
+    --b3-theme-danger: var(--cc-danger);
+
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    color: var(--cc-text);
+    background: var(--cc-bg);
+    font-size: 13px;
+    overflow: hidden;
+}
+
+/*
+ * 对话框等不挂在 .cc-calendar 下的容器：在 :root 上补一份默认值，
+ * 这样红色高亮在设置面板 / 事件编辑器里同样生效。
+ */
+.cc-dialog__mask {
+    --cc-accent: var(--b3-theme-primary, #3574f0);
+    --cc-highlight: var(--b3-theme-primary, #d23f31);
+    --cc-danger: var(--b3-theme-error, #d23f31);
+    --cc-text: var(--b3-theme-on-background, #1f2937);
+    --cc-text-dim: var(--b3-theme-on-surface, #6b7280);
+    --cc-border: var(--b3-border-color, #e2e8f0);
+    --cc-grid: var(--b3-list-hover, #eef2f7);
+}
+
+/* 停靠栏容器：侧栏 + 视图 + 状态栏 三段式，
+   侧栏与状态栏不收缩，保证底部按钮始终可见 */
+.cc-dock {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.cc-viewhost {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.cc-viewhost > .cc-calendar {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.cc-statusbar,
+.cc-sidebar {
+    flex: 0 0 auto;
+}
+
+.cc-calendar[data-density="compact"] {
+    font-size: 12px;
+    --cc-hour-height: 36px;
+}
+
+/* —— 工具栏 —— */
+
+.cc-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--cc-border);
+    background: var(--cc-bg-soft);
+    flex-wrap: wrap;
+}
+
+.cc-toolbar__group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.cc-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid var(--cc-border);
+    border-radius: 6px;
+    background: var(--cc-bg);
+    color: var(--cc-text-dim);
+    cursor: pointer;
+}
+
+.cc-icon-btn:hover {
+    color: var(--cc-accent);
+    border-color: var(--cc-accent);
+}
+
+.cc-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 6px;
+    border: 1px solid var(--cc-border);
+    background: var(--cc-bg);
+    color: var(--cc-text);
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.cc-btn:hover {
+    border-color: var(--cc-accent);
+    color: var(--cc-accent);
+}
+
+.cc-btn--primary {
+    background: color-mix(in srgb, var(--cc-highlight) 14%, var(--cc-bg, #ffffff));
+    border-color: var(--cc-highlight);
+    /* 不再用白字：主按钮也用高亮色 + 加粗，浅色/深色主题下都清晰 */
+    color: var(--cc-highlight);
+    font-weight: 600;
+}
+
+.cc-btn--primary:hover {
+    background: color-mix(in srgb, var(--cc-highlight) 26%, var(--cc-bg, #ffffff));
+    color: var(--cc-highlight);
+}
+
+.cc-btn--danger {
+    color: var(--cc-danger);
+    border-color: var(--cc-danger);
+    font-weight: 600;
+}
+
+.cc-tab {
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--cc-text-dim);
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.cc-tab:hover {
+    background: var(--cc-grid);
+    color: var(--cc-text);
+}
+
+.cc-tab--active {
+    background: color-mix(in srgb, var(--cc-highlight) 16%, transparent);
+    border-color: var(--cc-highlight);
+    color: var(--cc-highlight);
+    font-weight: 700;
+}
+
+/* —— 标题 —— */
+
+.cc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px 4px;
+}
+
+.cc-header__title {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.cc-header__sub {
+    font-size: 12px;
+    color: var(--cc-text-dim);
+}
+
+/* —— 主体 —— */
+
+.cc-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+
+/* —— 月视图 —— */
+
+.cc-month {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-auto-rows: minmax(96px, 1fr);
+    height: 100%;
+    min-height: 0;
+    border-left: 1px solid var(--cc-border);
+}
+
+.cc-month--weeks {
+    grid-template-columns: 28px repeat(7, minmax(0, 1fr));
+}
+
+.cc-month__weekday {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 24px;
+    font-size: 11px;
+    color: var(--cc-text-dim);
+    border-bottom: 1px solid var(--cc-border);
+    border-right: 1px solid var(--cc-border);
+    position: sticky;
+    top: 0;
+    background: var(--cc-bg-soft);
+    z-index: 2;
+}
+
+.cc-month__weekday--corner {
+    font-weight: 600;
+}
+
+.cc-month__weekno {
+    font-size: 10px;
+    color: var(--cc-text-dim);
+}
+
+.cc-month__cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 2px 3px 4px;
+    min-width: 0;
+    border-right: 1px solid var(--cc-border);
+    border-bottom: 1px solid var(--cc-border);
+    overflow: hidden;
+}
+
+.cc-month__cell--outside {
+    background: var(--cc-bg-soft);
+    opacity: 0.72;
+}
+
+.cc-month__cell--drop {
+    background: var(--cc-accent-soft);
+    outline: 1px dashed var(--cc-accent);
+    outline-offset: -2px;
+}
+
+.cc-month__dayhead {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 18px;
+}
+
+.cc-month__daynum {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.cc-month__cell--today .cc-month__daynum {
+    /* 今日：高亮色描边 + 加粗数字，不用白字填充 */
+    background: color-mix(in srgb, var(--cc-highlight) 18%, transparent);
+    color: var(--cc-highlight);
+    font-weight: 700;
+    box-shadow: inset 0 0 0 1px var(--cc-highlight);
+}
+
+.cc-month__lunar {
+    font-size: 10px;
+    color: var(--cc-text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cc-month__events {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    overflow: hidden;
+    flex: 1 1 auto;
+}
+
+.cc-more {
+    border: 0;
+    background: transparent;
+    color: var(--cc-text-dim);
+    font-size: 11px;
+    text-align: left;
+    padding: 0 2px;
+    cursor: pointer;
+}
+
+.cc-more:hover {
+    color: var(--cc-accent);
+}
+
+/* —— 事件胶囊 —— */
+
+.cc-chip {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    padding: 1px 5px;
+    border-radius: 4px;
+    border-left: 3px solid var(--cc-chip-color);
+    background: color-mix(in srgb, var(--cc-chip-color) 14%, transparent);
+    color: var(--cc-text);
+    cursor: pointer;
+    line-height: 16px;
+    overflow: hidden;
+}
+
+.cc-chip:hover {
+    background: color-mix(in srgb, var(--cc-chip-color) 26%, transparent);
+}
+
+.cc-chip[data-readonly="1"] {
+    border-left-style: dotted;
+}
+
+.cc-chip[data-cancelled="1"] .cc-chip__title {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.cc-chip__meta {
+    flex: 0 0 auto;
+    font-size: 10px;
+    color: var(--cc-text-dim);
+    font-variant-numeric: tabular-nums;
+}
+
+.cc-chip__title {
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cc-chip--timed {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 2px 4px;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.cc-chip--timed .cc-chip__title {
+    white-space: normal;
+    line-height: 1.15;
+}
+
+/* —— 周/日视图 —— */
+
+.cc-timegrid {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.cc-allday {
+    display: grid;
+    grid-template-columns: 48px repeat(var(--cc-days, 7), minmax(0, 1fr));
+    border-bottom: 1px solid var(--cc-border);
+    background: var(--cc-bg-soft);
+    min-height: 22px;
+}
+
+.cc-allday__label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--cc-text-dim);
+}
+
+.cc-allday__cell {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 1px 2px;
+    border-left: 1px solid var(--cc-border);
+    min-height: 20px;
+}
+
+.cc-timegrid__head {
+    display: grid;
+    grid-template-columns: 48px repeat(var(--cc-days, 7), minmax(0, 1fr));
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: var(--cc-bg-soft);
+    border-bottom: 1px solid var(--cc-border);
+}
+
+.cc-timegrid__corner {
+    border-right: 1px solid var(--cc-border);
+}
+
+.cc-timegrid__dayhead {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+    padding: 2px 0;
+    font-size: 11px;
+    color: var(--cc-text-dim);
+    border-left: 1px solid var(--cc-border);
+}
+
+.cc-timegrid__dayhead--today {
+    color: var(--cc-today);
+    font-weight: 700;
+}
+
+.cc-timegrid__daynum {
+    font-size: 13px;
+}
+
+.cc-timegrid__scroll {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+}
+
+.cc-timegrid__axis {
+    border-right: 1px solid var(--cc-border);
+}
+
+.cc-timegrid__hour {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding-right: 4px;
+    font-size: 10px;
+    color: var(--cc-text-dim);
+    border-bottom: 1px solid var(--cc-grid);
+    box-sizing: border-box;
+}
+
+.cc-timegrid__columns {
+    display: grid;
+    grid-template-columns: repeat(var(--cc-days, 7), minmax(0, 1fr));
+    position: relative;
+}
+
+.cc-timegrid__column {
+    position: relative;
+    border-left: 1px solid var(--cc-border);
+    min-width: 0;
+}
+
+.cc-timegrid__column--today {
+    background: var(--cc-accent-soft);
+}
+
+.cc-timegrid__slot {
+    border-bottom: 1px solid var(--cc-grid);
+    box-sizing: border-box;
+}
+
+/* —— 议程视图 —— */
+
+.cc-agenda {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 8px 12px 24px;
+}
+
+.cc-agenda__day {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.cc-agenda__date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--cc-text-dim);
+    border-bottom: 1px solid var(--cc-border);
+    padding-bottom: 3px;
+}
+
+.cc-agenda__date--today {
+    color: var(--cc-today);
+}
+
+.cc-agenda__lunar {
+    font-weight: 400;
+    font-size: 11px;
+}
+
+.cc-agenda__item {
+    display: flex;
+    gap: 8px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    border-left: 3px solid var(--cc-chip-color);
+    background: color-mix(in srgb, var(--cc-chip-color) 10%, transparent);
+    cursor: pointer;
+}
+
+.cc-agenda__item:hover {
+    background: color-mix(in srgb, var(--cc-chip-color) 20%, transparent);
+}
+
+.cc-agenda__time {
+    flex: 0 0 62px;
+    font-size: 11px;
+    color: var(--cc-text-dim);
+    font-variant-numeric: tabular-nums;
+}
+
+.cc-agenda__main {
+    min-width: 0;
+}
+
+.cc-agenda__title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cc-agenda__meta {
+    font-size: 11px;
+    color: var(--cc-text-dim);
+}
+
+.cc-empty {
+    padding: 32px 12px;
+    text-align: center;
+    color: var(--cc-text-dim);
+}
+
+/* —— 日历列表 / 侧栏 —— */
+
+.cc-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--cc-border);
+    max-height: 40%;
+    overflow: auto;
+}
+
+.cc-sidebar__item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 4px;
+    border-radius: 5px;
+    cursor: pointer;
+    /* 固定前景色，避免继承到浅色文字造成「白底白字」 */
+    color: var(--cc-text);
+}
+
+.cc-sidebar__item:hover {
+    background: var(--cc-grid);
+}
+
+/* 已勾选的日历：整行加淡色底 + 名称加粗，选中状态一目了然
+   （:has 不被支持时只是少一层底色，不影响文字可读性） */
+.cc-sidebar__item:has(.cc-checkbox__input:checked) {
+    background: color-mix(in srgb, var(--cc-highlight, #d23f31) 12%, transparent);
+}
+
+.cc-sidebar__item:has(.cc-checkbox__input:checked) .cc-sidebar__name {
+    font-weight: 700;
+}
+
+/* 复选框统一自绘：不依赖 b3-switch 的主题变量，任何终端都能看清 */
+.cc-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    color: var(--cc-text, var(--b3-theme-on-background, #1f2937));
+    line-height: 1.4;
+}
+
+.cc-checkbox__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.cc-checkbox__box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--cc-border, var(--b3-border-color, #cbd5e1));
+    border-radius: 3px;
+    background: var(--b3-theme-background, #ffffff);
+    /* 勾选标记同样不用白色 */
+    color: var(--cc-highlight, #d23f31);
+    box-sizing: border-box;
+}
+
+.cc-checkbox__box svg {
+    display: block;
+    opacity: 0;
+}
+
+.cc-checkbox__input:checked + .cc-checkbox__box {
+    background: color-mix(in srgb, var(--cc-highlight, #d23f31) 20%, var(--b3-theme-background, #ffffff));
+    border-color: var(--cc-highlight, #d23f31);
+    /* 勾 + 加粗描边，选中态明显且不依赖颜色填充 */
+    stroke-width: 1.5;
+}
+
+.cc-checkbox__input:checked + .cc-checkbox__box svg {
+    opacity: 1;
+}
+
+.cc-checkbox__input:focus-visible + .cc-checkbox__box {
+    outline: 2px solid var(--cc-accent, var(--b3-theme-primary, #3574f0));
+    outline-offset: 1px;
+}
+
+.cc-checkbox__label {
+    min-width: 0;
+    color: inherit;
+}
+
+.cc-sidebar__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex: 0 0 auto;
+}
+
+.cc-sidebar__name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cc-sidebar__badge {
+    font-size: 10px;
+    color: var(--cc-text-dim);
+}
+
+.cc-statusbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 10px;
+    border-top: 1px solid var(--cc-border);
+    background: var(--cc-bg-soft);
+    font-size: 11px;
+    color: var(--cc-text-dim);
+}
+
+/*
+ * 思源「状态栏」里的日历项。
+ *
+ * 必须**完全跟随系统状态栏**的字号与颜色：这里用 !important 覆盖任何主题或
+ * 系统规则（`.status__msg` 等），保证与相邻项一致。元素上还有内联的
+ * inherit + !important（见 index.ts），双保险。
+ */
+.cc-statusbar__hint--system {
+    font-size: inherit !important;
+    font-family: inherit !important;
+    font-weight: inherit !important;
+    line-height: inherit !important;
+    letter-spacing: inherit !important;
+    color: inherit !important;
+    opacity: 1;
+    white-space: nowrap;
+    padding: 0 4px;
+    border-radius: 3px;
+    background: transparent;
+}
+
+.cc-statusbar__hint--system:hover {
+    background: var(--b3-list-hover, var(--b3-theme-surface-lighter, transparent));
+}
+
+.cc-statusbar__error {
+    color: var(--cc-danger);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 「已停用」日历的折叠区：仅用于重新启用，视觉上弱化 */
+.cc-sidebar__hidden {
+    margin: 4px 0 0;
+    font-size: 11px;
+    color: var(--cc-text-dim);
+}
+
+.cc-sidebar__hidden > summary {
+    cursor: pointer;
+    padding: 2px 6px;
+    user-select: none;
+}
+
+.cc-sidebar__item--muted {
+    opacity: 0.7;
+}
+
+/* —— 日志查看 —— */
+
+.cc-logs {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.cc-logs__list {
+    margin: 0;
+    max-height: 52vh;
+    overflow: auto;
+    padding: 8px;
+    border: 1px solid var(--b3-border-color, #e2e8f0);
+    border-radius: 6px;
+    background: var(--b3-theme-background, #ffffff);
+    color: var(--b3-theme-on-background, #1f2937);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.cc-logs__list:empty::before {
+    content: "（暂无日志）";
+    color: var(--b3-theme-on-surface, #6b7280);
+}
+
+/* 任务（VTODO，例如 Vikunja）：用左侧虚线区分于日程，不依赖颜色 */
+.cc-chip[data-todo="1"] {
+    border-left-style: dashed;
+}
+
+/* —— 对话框 —— */
+
+.cc-dialog__mask {
+    position: fixed;
+    /* 显式写四边而不是 inset：个别浏览器/旧内核上 inset 支持不完整 */
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    /* 必须高于思源自身的浮层（菜单 1000+、预览层），否则遮罩会被压在下面 */
+    z-index: 2147483000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+    overflow: auto;
+    background: rgba(15, 23, 42, 0.35);
+}
+
+.cc-dialog {
+    display: flex;
+    flex-direction: column;
+    width: 520px;
+    min-width: 280px;
+    max-width: min(720px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    min-height: 120px;
+    border-radius: 10px;
+    /* 用 surface 而不是 background：思源里 background 是「页面底色」，
+       在深色主题下与文字色对比不足；surface 才是卡片色。 */
+    background: var(--b3-theme-surface, #ffffff);
+    color: var(--b3-theme-on-surface, #1f2937);
+    box-shadow: 0 18px 48px rgba(15, 23, 42, 0.32);
+    overflow: hidden;
+    /* 不参与 flex 收缩，避免某些终端下高度被压成一条 */
+    flex: 0 0 auto;
+}
+
+.cc-dialog__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex: 0 0 auto;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--b3-border-color, #e2e8f0);
+    font-weight: 600;
+}
+
+.cc-dialog__title {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cc-dialog__content {
+    flex: 1 1 auto;
+    min-height: 160px;
+    padding: 12px;
+    overflow: auto;
+}
+
+.cc-dialog__status {    flex: 1 1 auto;
+    min-width: 0;
+    margin-right: 8px;
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--b3-theme-on-surface, #6b7280);
+    text-align: left;
+}
+
+.cc-dialog__footer {
+    flex: 0 0 auto;
+    padding: 8px 12px;
+    border-top: 1px solid var(--b3-border-color, #e2e8f0);
+    background: var(--b3-theme-background, #f7f9fc);
+}
+
+.cc-dialog__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.cc-dialog__actions .cc-btn--danger {
+    margin-right: auto;
+}
+
+.cc-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cc-form--row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.cc-field {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.cc-field--inline {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.cc-field__label {
+    font-size: 11px;
+    color: var(--b3-theme-on-surface, #6b7280);
+}
+
+.cc-field__hint {
+    font-size: 10px;
+    color: var(--b3-theme-on-surface, #6b7280);
+    opacity: 0.85;
+}
+
+.cc-input,
+.cc-textarea,
+.cc-select {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.cc-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.cc-hint {
+    font-size: 11px;
+    color: var(--b3-theme-on-surface, #6b7280);
+}
+
+.cc-hint--warn {
+    color: var(--b3-theme-error, #d23f31);
+}
+
+.cc-account-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px;
+    border: 1px solid var(--b3-border-color, #e2e8f0);
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.cc-account-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.cc-calendar-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: 180px;
+    overflow: auto;
+    border: 1px solid var(--b3-border-color, #e2e8f0);
+    border-radius: 6px;
+    padding: 4px;
+    background: var(--b3-theme-background, #ffffff);
+    color: var(--b3-theme-on-background, #1f2937);
+}
+
+.cc-calendar-picker__item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: inherit;
+}
+
+.cc-calendar-picker__item:hover {
+    background: var(--b3-theme-primary-lightest, rgba(53, 116, 240, 0.12));
+}
+
+/* 已勾选（可写）的日历：淡色底 + 名称加粗 */
+.cc-calendar-picker__item:has(.cc-checkbox__input:checked) {
+    background: color-mix(in srgb, var(--cc-highlight, #d23f31) 12%, transparent);
+}
+
+.cc-calendar-picker__item:has(.cc-checkbox__input:checked) .cc-sidebar__name {
+    font-weight: 700;
+}
+
+.cc-badge {
+    font-size: 10px;
+    padding: 1px 5px;
+    border-radius: 999px;
+    background: var(--cc-accent-soft);
+    color: var(--cc-accent);
+    font-weight: 600;
+}
+
+/* 勾选（已启用/可写）状态用高亮色加粗，不依赖白色或纯色填充 */
+.cc-badge--on {
+    background: color-mix(in srgb, var(--cc-highlight, #d23f31) 16%, transparent);
+    color: var(--cc-highlight, #d23f31);
+    font-weight: 700;
+}
+
+.cc-badge--danger {
+    background: color-mix(in srgb, var(--cc-danger) 18%, transparent);
+    color: var(--cc-danger);
+}
+
+/* 移动端：压缩留白，隐藏次要信息 */
+.cc-calendar.cc-calendar--mobile .cc-month {
+    grid-auto-rows: minmax(64px, 1fr);
+}
+
+.cc-calendar.cc-calendar--mobile .cc-month__lunar,
+.cc-calendar.cc-calendar--mobile .cc-statusbar__hint {
+    display: none;
+}
+
+.cc-calendar.cc-calendar--mobile .cc-toolbar {
+    padding: 4px 6px;
+}

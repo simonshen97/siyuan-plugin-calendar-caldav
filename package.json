@@ -1,0 +1,27 @@
+{
+  "name": "siyuan-plugin-calendar-caldav",
+  "version": "0.1.0",
+  "description": "SiYuan calendar view with CalDAV sync (思源笔记日历视图 CalDAV 兼容插件)",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --no-warnings ./scripts/build.mjs --dev",
+    "build": "node --no-warnings ./scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "zip": "node --no-warnings ./scripts/zip.mjs",
+    "make-link": "node --no-warnings ./scripts/make-link.mjs",
+    "make-install": "node --no-warnings ./scripts/make-install.mjs",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.5.1",
+    "ical.js": "^2.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vite-plugin-static-copy": "^2.2.0",
+    "vitest": "^2.1.8"
+  }
+}
